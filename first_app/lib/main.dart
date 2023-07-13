@@ -64,8 +64,7 @@ class MyHomePage extends StatelessWidget {
                     if (states.contains(MaterialState.pressed)) {
                       return Color.fromRGBO(44, 58, 71, 1);
                     }
-                    return Color.fromRGBO(
-                        0, 0, 0, 1); // Use the component's default.
+                    return Color.fromRGBO(86, 97, 108, 1);
                   },
                 ),
               ),
