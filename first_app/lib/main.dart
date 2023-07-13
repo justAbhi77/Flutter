@@ -58,8 +58,20 @@ class MyHomePage extends StatelessWidget {
               onPressed: () {
                 appState.getnext();
               },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.resolveWith<Color?>(
+                  (Set<MaterialState> states) {
+                    if (states.contains(MaterialState.pressed)) {
+                      return Color.fromRGBO(44, 58, 71, 1);
+                    }
+                    return Color.fromRGBO(
+                        0, 0, 0, 1); // Use the component's default.
+                  },
+                ),
+              ),
               child: Text(
                 'Next',
+                style: style,
               ),
             )
           ],
