@@ -69,8 +69,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var colorScheme = Theme.of(context).colorScheme;
-
     Widget page;
     switch (selectedIndex) {
       case 0:
@@ -86,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // The container for the current page, with its background color
     // and subtle switching animation.
     var mainArea = ColoredBox(
-      color: colorScheme.surfaceVariant,
+      color: Color.fromRGBO(234, 181, 67, 1), //rgba(234, 181, 67,1.0)
       child: AnimatedSwitcher(
         duration: Duration(milliseconds: 200),
         child: page,
@@ -99,30 +97,34 @@ class _MyHomePageState extends State<MyHomePage> {
           if (constraints.maxWidth < 450) {
             // Use a more mobile-friendly layout with BottomNavigationBar
             // on narrow screens.
-            return Column(
-              children: [
-                Expanded(child: mainArea),
-                SafeArea(
-                  child: BottomNavigationBar(
-                    items: [
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.home),
-                        label: 'Home',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.favorite),
-                        label: 'Favorites',
-                      ),
-                    ],
-                    currentIndex: selectedIndex,
-                    onTap: (value) {
-                      setState(() {
-                        selectedIndex = value;
-                      });
-                    },
-                  ),
-                )
-              ],
+            return Container(
+              color: Color.fromRGBO(234, 181, 67, 1.0),
+              child: Column(
+                children: [
+                  Expanded(child: mainArea),
+                  SafeArea(
+                    child: BottomNavigationBar(
+                      backgroundColor: Color.fromRGBO(254, 164, 127, 1.0),
+                      items: [
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.home),
+                          label: 'Home',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.favorite),
+                          label: 'Favorites',
+                        ),
+                      ],
+                      currentIndex: selectedIndex,
+                      onTap: (value) {
+                        setState(() {
+                          selectedIndex = value;
+                        });
+                      },
+                    ),
+                  )
+                ],
+              ),
             );
           } else {
             return Row(
@@ -255,11 +257,18 @@ class FavoritesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
+
+    var style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+    );
     var appState = context.watch<MyAppState>();
 
     if (appState.favorites.isEmpty) {
       return Center(
-        child: Text('No favorites yet.'),
+        child: Text(
+          'No favorites yet.',
+          style: style,
+        ),
       );
     }
 
@@ -268,8 +277,11 @@ class FavoritesPage extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.all(30),
-          child: Text('You have '
-              '${appState.favorites.length} favorites:'),
+          child: Text(
+            'You have '
+            '${appState.favorites.length} favorites:',
+            style: style,
+          ),
         ),
         Expanded(
           // Make better use of wide windows with a grid.
@@ -291,6 +303,7 @@ class FavoritesPage extends StatelessWidget {
                   title: Text(
                     pair.asLowerCase,
                     semanticsLabel: pair.asPascalCase,
+                    style: style,
                   ),
                 ),
             ],
