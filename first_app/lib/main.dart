@@ -4,6 +4,9 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+
 void main() {
   runApp(MyApp());
 }
@@ -33,6 +36,36 @@ class MyAppState extends ChangeNotifier {
 
   GlobalKey? historyListKey;
 
+  //read favorites
+  late File fileinDirectory;
+  var favorites = <WordPair>[];
+
+  MyAppState() {
+    getPersistentDir();
+  }
+
+  void getPersistentDir() async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    final File file = File('${directory.path}/my_file.txt');
+    if (file.existsSync()) {
+      fileinDirectory = file;
+      String prevFav = fileinDirectory.readAsStringSync();
+      prevFav = prevFav.replaceAll('[', '');
+      prevFav = prevFav.replaceAll(']', '');
+      print(' file has $prevFav');
+
+      for (String wordpairText in prevFav.split(',')) {
+        List<String> wordpairmaker = wordpairText.split(':');
+        if (wordpairmaker[0] == '' || wordpairmaker[1] == '') continue;
+        WordPair prevwordpair = WordPair(wordpairmaker[0], wordpairmaker[1]);
+        favorites.add(prevwordpair);
+      }
+      //favorites.add();
+      return;
+    }
+    fileinDirectory = await file.create();
+  }
+
   void getNext() {
     history.insert(0, current);
     var animatedList = historyListKey?.currentState as AnimatedListState?;
@@ -40,8 +73,6 @@ class MyAppState extends ChangeNotifier {
     current = WordPair.random();
     notifyListeners();
   }
-
-  var favorites = <WordPair>[];
 
   void toggleFavorite([WordPair? pair]) {
     pair = pair ?? current;
@@ -51,10 +82,32 @@ class MyAppState extends ChangeNotifier {
       favorites.add(pair);
     }
     notifyListeners();
+
+    String wordPairText, allwordpair = '';
+
+    for (WordPair wordpair in favorites) {
+      wordPairText = '${wordpair.first}:${wordpair.second}';
+      allwordpair += '$wordPairText,';
+    }
+    print('wordpair $allwordpair');
+    fileinDirectory.writeAsStringSync(allwordpair, mode: FileMode.write);
   }
 
   void removeFavorite(WordPair pair) {
     favorites.remove(pair);
+    notifyListeners();
+
+    String wordPairText, allwordpair = '';
+
+    for (WordPair wordpair in favorites) {
+      wordPairText = '${wordpair.first}:${wordpair.second}';
+      allwordpair += '$wordPairText,';
+    }
+    print('wordpair $allwordpair');
+    fileinDirectory.writeAsStringSync(allwordpair, mode: FileMode.write);
+  }
+
+  void mynotifyListners() {
     notifyListeners();
   }
 }
@@ -201,6 +254,16 @@ class GeneratorPage extends StatelessWidget {
                 },
                 child: Text('Next'),
               ),
+              SizedBox(width: 10),
+              ElevatedButton.icon(
+                  onPressed: () {
+                    if (appState.fileinDirectory.existsSync()) {
+                      appState.fileinDirectory.delete();
+                    }
+                    appState.favorites.clear();
+                  },
+                  icon: Icon(Icons.delete_forever_outlined),
+                  label: Text('Favorites')),
             ],
           ),
           Spacer(flex: 2),
