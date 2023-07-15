@@ -24,6 +24,11 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         ),
+        darkTheme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        ),
+        themeMode: ThemeMode.system,
         home: MyHomePage(),
       ),
     );
@@ -60,6 +65,7 @@ class MyAppState extends ChangeNotifier {
         WordPair prevwordpair = WordPair(wordpairmaker[0], wordpairmaker[1]);
         favorites.add(prevwordpair);
       }
+      notifyListeners();
       //favorites.add();
       return;
     }
